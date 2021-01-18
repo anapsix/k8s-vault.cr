@@ -27,7 +27,7 @@ while cli_opts.size > 0
     K8sVault.example_config
     exit 0
   when "completion"
-    K8sVault::Log.info "not implemented yet"
+    K8sVault.completion
     exit 0
   when "exec"
     cli_opts.shift

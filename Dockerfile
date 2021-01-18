@@ -5,6 +5,7 @@ WORKDIR /tmp
 COPY VERSION .
 COPY shard.yml .
 COPY k8s-vault_example.yaml .
+COPY k8s-vault-completion.bash .
 COPY ./src ./src
 RUN \
     shards install && \

@@ -66,6 +66,10 @@ module K8sVault
     puts {{ read_file("#{__DIR__}/../k8s-vault_example.yaml") }}
   end
 
+  def self.completion
+    puts {{ read_file("#{__DIR__}/../k8s-vault-completion.bash") }}
+  end
+
   def self.usage
     puts <<-USAGE
     k8s-vault makes it easy to reach K8s API via jumphost, using SSH port forwarding.
