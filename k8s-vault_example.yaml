@@ -1,9 +1,9 @@
-version: "0.2.0"
+version: "0.3.0"
 k8s_api_timeout: 5 # in seconds
 ssh_forwarding_port:
   random: true
   static: 32845
-clusters:
+contexts:
 - name: prod
   enabled: true
   ssh_jump_host: jumphost.prod.example.com

@@ -56,7 +56,7 @@ module K8sVault
       else
         raise K8sVault::NoFileAccessError.new("\"#{file}\" is not readable")
       end
-      config.clusters.map { |c| c.name if c.enabled == true }.compact
+      config.contexts.map { |c| c.name if c.enabled == true }.compact
     end
   end
 end

@@ -32,14 +32,17 @@ _k8svault_completion()
 
   case $_word in
     k8s-vault)
-      COMPREPLY+=( $(compgen -W "--debug exec completion" -- "${_word_last}") )
+      COMPREPLY+=( $(compgen -W "--debug exec completion example-config" -- "${_word_last}") )
       return
     ;;
     --debug)
-      COMPREPLY=( $(compgen -W "exec completion" -- "${_word_last}") )
+      COMPREPLY=( $(compgen -W "exec completion example-config" -- "${_word_last}") )
       return
     ;;
     completion)
+      return
+    ;;
+    example-config)
       return
     ;;
     exec)

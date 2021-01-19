@@ -5,8 +5,9 @@ include K8sVault::Helpers
 cli_opts = ARGV
 
 if cli_opts.empty?
-  puts K8sVault.usage
-  exit 0
+  STDERR.puts "k8s-vault version #{K8sVault::VERSION}"
+  STDERR.puts "see --help for usage details"
+  exit 1
 end
 
 kubecontext = "_unset_"
@@ -18,7 +19,7 @@ while cli_opts.size > 0
     puts K8sVault::VERSION
     exit 0
   when "-h", "--help", "--usage"
-    puts K8sVault.usage
+    K8sVault.usage
     exit 0
   when "-d", "--debug"
     K8sVault::Log.debug = true
@@ -34,19 +35,32 @@ while cli_opts.size > 0
     exit 0
   when "exec"
     cli_opts.shift
-    kubecontext = cli_opts.first
-    cli_opts.shift
-    if cli_opts.size > 0 && cli_opts.first == "-s"
-      spawn_shell = true
+    if cli_opts.empty?
+      K8sVault::Log.error "missing context name, it must follow \"exec\", see --help"
+      exit 1
+    else
+      kubecontext = cli_opts.first
       cli_opts.shift
-      break
+    end
+    if cli_opts.empty?
+      K8sVault::Log.error "missing required argument \"--\" or \"-s\", see --help"
+      exit 1
+    else
+      if cli_opts.first == "-s"
+        spawn_shell = true
+        cli_opts.shift
+        break
+      end
     end
   when "--"
     cli_opts.shift
+    if cli_opts.empty?
+      K8sVault::Log.error "command should follow \"--\", see --help"
+      exit 1
+    end
     break
   else
-    K8sVault::Log.error "unexpected option #{cli_opts.first}"
-    K8sVault.usage
+    K8sVault::Log.error "unexpected option \"#{cli_opts.first}\", see --help"
     exit 1
   end
 end
@@ -58,9 +72,8 @@ unless Process.find_executable("ssh")
 end
 
 # make sure kubecontext is set
-if kubecontext == "_unset_"
-  K8sVault::Log.error "missing context name, it must follow \"exec\""
-  K8sVault.usage
+if kubecontext == "_unset_" || kubecontext.to_s.empty?
+  K8sVault::Log.error "context name cannot be empty, it must follow \"exec\", see --help"
   exit 1
 end
 

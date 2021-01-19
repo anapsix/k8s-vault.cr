@@ -45,7 +45,7 @@ module K8sVault
       end
 
       # Used for parsing `.clusters` in `K8SVAULT_CONFIG`
-      struct Cluster
+      struct Context
         include YAML::Serializable
 
         # From `K8SVAULT_CONFIG`: `.clusters[*].name`
@@ -67,8 +67,8 @@ module K8sVault
       # From `K8SVAULT_CONFIG`: `.ssh_forwarding_port`
       getter ssh_forwarding_port : SSHForwardingPort
 
-      # From `K8SVAULT_CONFIG`: `.clusters`
-      getter clusters : Array(Cluster)
+      # From `K8SVAULT_CONFIG`: `.contexts`
+      getter contexts : Array(Context)
     end
 
     # Path to `K8SVAULT_CONFIG`

@@ -21,7 +21,7 @@ module K8sVault
     kubeconfig_path ||= K8sVault::KUBECONFIG
 
     config = K8sVault::ConfigReader.config(config_path)
-    context_config = config.clusters.select {|c| c.name == kubecontext}
+    context_config = config.contexts.select {|c| c.name == kubecontext}
     if context_config.empty?
       raise K8sVault::UnconfiguredContextError.new(kubecontext: kubecontext)
     end
