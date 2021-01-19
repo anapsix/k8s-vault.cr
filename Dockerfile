@@ -8,7 +8,7 @@ COPY k8s-vault_example.yaml .
 COPY k8s-vault-completion.bash .
 COPY ./src ./src
 RUN \
-    shards install && \
+    shards install --production && \
     crystal build --progress --release --static src/cli.cr -o /tmp/k8s-vault && \
     upx /tmp/k8s-vault && \
     echo >&2 "## Version check: $(/tmp/k8s-vault -v)" && \

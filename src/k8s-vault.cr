@@ -32,8 +32,8 @@ module K8sVault
     end
     ssh_jump_host = context_config.ssh_jump_host
 
-    kubeconfig = KCE.config_obj(target_context: kubecontext, kubeconfig: kubeconfig_path)
-    cluster_server = kubeconfig["clusters"].first.cluster["server"].to_s
+    kubeconfig = KCE.config(kubecontext: kubecontext, kubeconfig: kubeconfig_path)
+    cluster_server = kubeconfig.clusters.first.cluster.server.to_s
     remote_proto = cluster_server.split(/https?:\/\//).first?.to_s
     remote_proto = remote_proto.empty? ? "https" : remote_proto
     remote_host, remote_port = cluster_server.split(/https?:\/\//).last.split(":")
@@ -45,9 +45,9 @@ module K8sVault
                   end
 
     # update config with values for SSH forwarding
-    kubeconfig["clusters"].first.cluster.delete("certificate-authority-data")
-    kubeconfig["clusters"].first.cluster["insecure-skip-tls-verify"] = true
-    kubeconfig["clusters"].first.cluster["server"] = "#{remote_proto}://127.0.0.1:#{local_port}"
+    kubeconfig.clusters.first.cluster.certificate_authority_data = nil
+    kubeconfig.clusters.first.cluster.insecure_skip_tls_verify = true
+    kubeconfig.clusters.first.cluster.server = "#{remote_proto}://127.0.0.1:#{local_port}"
 
     Config.new(
       config_path: config_path.to_s,

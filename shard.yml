@@ -1,13 +1,14 @@
 name: k8s-vault
-version: 0.2.0
+version: 0.2.1
 
 description: |
   `k8s-vault` makes it easy to reach K8s API via jumphost, using SSH port forwarding.
 
 dependencies:
   kce:
+    # path: ../kce.cr
     github: anapsix/kce.cr
-    version: ~> 0.5.0
+    version: ~> 0.6.0
 
 authors:
   - Anastas Dancha <anapsix@random.io>
