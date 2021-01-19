@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-KUBECONFIG=${KUBECONFIG:-~/.kube/config}
 if [[ -z "${K8SVAULT_CONFIG_DIR:-}" ]]; then
   K8SVAULT_CONFIG_DIR="${HOME}/.kube"
 fi
@@ -7,13 +6,10 @@ if [[ -z "${K8SVAULT_CONFIG:-}" ]]; then
   K8SVAULT_CONFIG="${K8SVAULT_CONFIG_DIR}/k8s-vault.yaml"
 fi
 COMPREPLY=()
-DEPS=( jq oq )
-check_dep() {
-  if ! which $1 2>&1 >/dev/null; then
-    echo >&2 "ERROR: dependency missing - \"${1}\""
-    return 1
-  fi
-}
+if ! command -v k8s-vault >/dev/null; then
+  echo >&2 "ERROR: k8s-vault is missing in PATH"
+  return 1
+fi
 for dep in ${DEPS[*]}; do
   check_dep $dep
 done
@@ -24,8 +20,7 @@ fi
 _k8svault_get_contexts()
 {
   local contexts
-  # if contexts=$(yq r -j ${KUBECONFIG} contexts[*].name); then
-  if contexts=$(oq -i yaml '.clusters| .[] | select(.enabled != false) | .name' "${K8SVAULT_CONFIG}"); then
+  if contexts=$(k8s-vault list-enabled-contexts); then
     COMPREPLY+=( $(compgen -W "${contexts[*]}" -- "${_word_last}") )
   fi
 }

@@ -1,4 +1,5 @@
 require "socket"
+require "./configreader"
 require "./log"
 
 module K8sVault
@@ -10,8 +11,8 @@ module K8sVault
     # Example:
     # ```
     # unless wait_for_connection(host: "localhost", port: 8080, timeout: 10, sleep_cycle: 1)
-    #  STDERR.puts "failed to establish connection within 10 seconds"
-    #  exit 1
+    #   STDERR.puts "failed to establish connection within 10 seconds"
+    #   exit 1
     # end
     # ```
     def wait_for_connection(host : String = "localhost", port : Int32 = 80, timeout : Int32 = 5, sleep_cycle : Float32 = 0.25) : Bool
@@ -42,6 +43,20 @@ module K8sVault
         return false
       end
       return true
+    end
+
+    def list_enabled_contexts(file : String? = nil)
+      file ||= K8sVault::K8SVAULT_CONFIG
+      if File.readable?(file)
+        begin
+          config = K8sVault::ConfigReader.config(file)
+        rescue YAML::ParseException
+          raise K8sVault::ConfigParseError.new("unable to parse config \"#{file}\"")
+        end
+      else
+        raise K8sVault::NoFileAccessError.new("\"#{file}\" is not readable")
+      end
+      config.clusters.map { |c| c.name if c.enabled == true }.compact
     end
   end
 end

@@ -26,6 +26,9 @@ while cli_opts.size > 0
   when "example-config"
     K8sVault.example_config
     exit 0
+  when "list-enabled-contexts"
+    list_enabled_contexts.each {|c| puts c} rescue nil
+    exit 0
   when "completion"
     K8sVault.completion
     exit 0

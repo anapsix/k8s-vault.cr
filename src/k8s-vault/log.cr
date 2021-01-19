@@ -1,3 +1,5 @@
+require "colorize"
+
 module K8sVault
   class Log
     # Controls debug logging

@@ -1,4 +1,3 @@
-require "colorize"
 require "kce"
 require "./k8s-vault/*"
 
