@@ -28,7 +28,7 @@ while cli_opts.size > 0
     K8sVault.example_config
     exit 0
   when "list-enabled-contexts"
-    list_enabled_contexts.each {|c| puts c} rescue nil
+    list_enabled_contexts.each { |c| puts c } rescue nil
     exit 0
   when "completion"
     K8sVault.completion
@@ -122,7 +122,7 @@ begin
       "-N",
       "-L",
       "#{config.local_port}:#{config.remote_host}:#{config.remote_port}",
-      config.ssh_jump_host
+      config.ssh_jump_host,
     ],
     output: STDOUT,
     error: STDERR
@@ -141,7 +141,6 @@ rescue ex
   exit 1
 end
 
-
 ENV["K8SVAULT"] = "1"
 ENV["KUBECONFIG"] = K8sVault::KUBECONFIG_TEMP
 K8sVault::Log.debug "using KUBECONFIG: #{K8sVault::KUBECONFIG_TEMP}"
@@ -155,7 +154,7 @@ else
   sleep 3
   cmd = cli_opts.first
   cli_opts.shift
-  Process.run(cmd, cli_opts, { "KUBECONFIG" => K8sVault::KUBECONFIG_TEMP }, output: STDOUT, error: STDERR)
+  Process.run(cmd, cli_opts, {"KUBECONFIG" => K8sVault::KUBECONFIG_TEMP}, output: STDOUT, error: STDERR)
 end
 
 forwarder.signal(Signal::TERM)

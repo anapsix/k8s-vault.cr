@@ -2,7 +2,6 @@ require "kce"
 require "./k8s-vault/*"
 
 module K8sVault
-
   include K8sVault::Constants
 
   record Config,
@@ -21,7 +20,7 @@ module K8sVault
     kubeconfig_path ||= K8sVault::KUBECONFIG
 
     config = K8sVault::ConfigReader.config(config_path)
-    context_config = config.contexts.select {|c| c.name == kubecontext}
+    context_config = config.contexts.select { |c| c.name == kubecontext }
     if context_config.empty?
       raise K8sVault::UnconfiguredContextError.new(kubecontext: kubecontext)
     end
@@ -37,11 +36,11 @@ module K8sVault
     remote_proto = remote_proto.empty? ? "https" : remote_proto
     remote_host, remote_port = cluster_server.split(/https?:\/\//).last.split(":")
 
-    local_port  = if config.ssh_forwarding_port.random == true
-                    Random.rand(K8sVault::RANDOM_PORT_RANGE) + K8sVault::RANDOM_PORT_OFFSET
-                  else
-                    config.ssh_forwarding_port.static
-                  end
+    local_port = if config.ssh_forwarding_port.random == true
+                   Random.rand(K8sVault::RANDOM_PORT_RANGE) + K8sVault::RANDOM_PORT_OFFSET
+                 else
+                   config.ssh_forwarding_port.static
+                 end
 
     # update config with values for SSH forwarding
     kubeconfig.clusters.first.cluster.certificate_authority_data = nil
@@ -119,7 +118,6 @@ module K8sVault
   end
 
   # def self.run(options)
-
   #   kubecontext = nil
   #   spawn_shell = false
 

@@ -45,6 +45,11 @@ module K8sVault
       return true
     end
 
+    # Output list of enabled contexts from K8SVAULT_CONFIG
+    #
+    # Returns Array(String) of enabled contexts
+    # Raises `K8sVault::NoFileAccessError` if K8SVAULT_CONFIG is not accessible
+    # Raises `K8sVault::ConfigParseError` if K8SVAULT_CONFIG cannot be parsed
     def list_enabled_contexts(file : String? = nil)
       file ||= K8sVault::K8SVAULT_CONFIG
       if File.readable?(file)
@@ -57,6 +62,14 @@ module K8sVault
         raise K8sVault::NoFileAccessError.new("\"#{file}\" is not readable")
       end
       config.contexts.map { |c| c.name if c.enabled == true }.compact
+    end
+
+    # Removed temporary KUBECONFIG, if present
+    #
+    # Return `nil`
+    def cleanup : Nil
+      K8sVault::Log.debug "cleaning up"
+      File.delete(K8sVault::KUBECONFIG_TEMP) rescue nil
     end
   end
 end

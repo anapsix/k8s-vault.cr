@@ -1,8 +1,8 @@
 name: k8s-vault
-version: 0.3.0
+version: 0.3.1
 
 description: |
-  `k8s-vault` makes it easy to reach K8s API via jumphost, using SSH port forwarding.
+  k8s-vault makes it easy to reach K8s API via jumphost, using SSH port forwarding.
 
 dependencies:
   kce:
@@ -17,5 +17,5 @@ targets:
   k8s-vault:
     main: src/cli.cr
 
-crystal: ~> 0.35.1
+crystal: ~> 0.36.1
 license: MIT

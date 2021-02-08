@@ -1,0 +1,14 @@
+# bad config example
+k8s_api_timeout: 5 # in seconds
+ssh_forwarding_port:
+  random: true
+  static: 32845
+clusters:
+- name: prod
+  enabled: true
+  ssh_jump_host: jumphost.prod.example.com
+- name: qa
+  ssh_jump_host: jumphost.qa.example.com
+- name: dev
+  enabled: false
+  ssh_jump_host: jumphost.dev.example.com
