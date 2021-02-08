@@ -18,7 +18,7 @@ RUN \
 
 ## this stage created final docker image
 FROM busybox as release
-COPY --from=build /tmp/k8s-vault /k8s-vault
+COPY --from=build /tmp/k8s-vault /bin/k8s-vault
 USER nobody
-ENTRYPOINT ["/k8s-vault"]
+ENTRYPOINT ["/bin/k8s-vault"]
 CMD ["--help"]

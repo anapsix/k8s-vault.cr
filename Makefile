@@ -21,7 +21,7 @@ OUTPUT:= ./$(RELEASE_DIR)/$(BINARY)-$(VERSION)-$(OS)-$(ARCH)
 all: clean prepare releases
 
 releases: prepare version $(TARGET) pack docker
-	docker run -it --rm -v ${PWD}/$(RELEASE_DIR):/app --entrypoint "sh" $(BINARY):$(VERSION) -c "cp /$(BINARY) /app/$(BINARY)-$(VERSION)-linux-amd64"
+	docker run -it --rm -v ${PWD}/$(RELEASE_DIR):/app --entrypoint "sh" $(BINARY):$(VERSION) -c "cp /bin/$(BINARY) /app/$(BINARY)-$(VERSION)-linux-amd64"
 
 docker:
 	docker build -t $(BINARY):$(VERSION) .
@@ -35,6 +35,7 @@ clean:
 	@echo >&2 "cleaned up"
 
 version:
+	@sed -i "" 's/^version:.*/version: "$(VERSION)"/g' k8s-vault_example.yaml
 	@sed -i "" 's/^version:.*/version: $(VERSION)/g' shard.yml
 	@echo "shard.yml updated with version $(VERSION)"
 

@@ -72,4 +72,22 @@ describe K8sVault do
       )
     end
   end
+
+  describe "#list_enabled_contexts" do
+    it "lists enabled contexts" do
+      K8sVault.list_enabled_contexts(config_path).should eq(["prod", "qa"])
+    end
+
+    it "raises K8sVault::ConfigParseError" do
+      expect_raises(K8sVault::ConfigParseError, /^unable to parse config/) do
+        K8sVault.list_enabled_contexts(config_path_bad)
+      end
+    end
+
+    it "raises K8sVault::NoFileAccessError" do
+      expect_raises(K8sVault::NoFileAccessError, /is not readable$/) do
+        K8sVault.list_enabled_contexts("/tmp/k8s-vault_Uth1ui1b.yaml")
+      end
+    end
+  end
 end
