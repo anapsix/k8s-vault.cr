@@ -316,6 +316,7 @@ module K8sVault
 
     ENV["K8SVAULT"] = "1"
     ENV["KUBECONFIG"] = K8sVault::KUBECONFIG_TEMP
+    ENV["K8SVAULT_CONTEXT"] = kubecontext
     K8sVault::Log.debug "using KUBECONFIG: #{K8sVault::KUBECONFIG_TEMP}"
 
     if spawn_shell
@@ -330,8 +331,8 @@ module K8sVault
       Process.run(cmd, options, {"KUBECONFIG" => K8sVault::KUBECONFIG_TEMP}, output: STDOUT, error: STDERR)
     end
 
-    forwarder.signal(Signal::TERM)
-    forwarder.wait
+    forwarder.signal(Signal::TERM) rescue nil
+    forwarder.wait rescue nil
     K8sVault.cleanup
   end
 end

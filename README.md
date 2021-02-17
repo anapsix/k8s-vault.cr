@@ -50,6 +50,9 @@ $ exit
 (SSH connection is terminated)
 ```
 
+> when launched in SHELL mode, `K8SVAULT_CONTEXT` environment variable will be
+> be set to selected context
+
 ```
 Usage: k8s-vault [--debug] [completion|exec <context-name>] [-s | -- <cli tool using KUBECONFIG>]
 
