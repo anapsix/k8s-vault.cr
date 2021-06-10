@@ -280,6 +280,10 @@ module K8sVault
       K8sVault::Log.error "unable to parse config file at #{K8sVault::K8SVAULT_CONFIG}"
       cleanup
       exit 1
+    rescue KCE::Exceptions::ContextMissingError
+      K8sVault::Log.error "\"#{kubecontext}\" context is not found in KUBECONFIG (#{K8sVault::KUBECONFIG})"
+      cleanup
+      exit 1
     rescue ex
       K8sVault::Log.debug "#{ex.message} (#{ex.class})"
       K8sVault::Log.error "unexpected error"

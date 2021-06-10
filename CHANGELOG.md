@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.4.1] - 2021-06-10
+### Changed
+- using newer version of Crystal
+- bumped to KCE v0.6.1
+
+### Fixed
+- log user-friendly error when requested context is not found in KUBECONFIG
+
+
 ## [0.4.0] - 2021-02-17
 ### Added
 - `CHANGELOG.md`
