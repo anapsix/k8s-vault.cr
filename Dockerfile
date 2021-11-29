@@ -1,5 +1,5 @@
 ## this stage installs everything required to build the project
-FROM alpine:3.13 as build
+FROM alpine:3.15 as build
 RUN apk add --no-cache musl-dev yaml-static upx && \
     apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
       llvm11-libs && \

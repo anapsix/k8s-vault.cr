@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.4.2] - 2021-11-29
+### Changed
+- using `alpine:3.15` to build
+
+
 ## [0.4.1] - 2021-06-10
 ### Changed
 - using newer version of Crystal
@@ -75,7 +80,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - initial implementation
 
 
-[Unreleased]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/anapsix/k8s-vault.cr/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/anapsix/k8s-vault.cr/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/anapsix/k8s-vault.cr/compare/v0.2.1...v0.2.2
