@@ -1,4 +1,4 @@
-version: "0.4.2"
+version: "0.4.3"
 k8s_api_timeout: 5 # in seconds
 ssh_forwarding_port:
   random: true
