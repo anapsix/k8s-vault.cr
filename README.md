@@ -24,7 +24,7 @@ Or build from source:
 ```sh
 git clone https://github.com/anapsix/k8s-vault.cr.git
 cd k8s-vault.cr
-shards build
+shards build # or "make src/cli"
 # copy ./bin/k8s-vault to some directory in your PATH
 ```
 
