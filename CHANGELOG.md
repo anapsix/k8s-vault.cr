@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.4.3] - 2022-12-07
+### Changed
+- using `alpine:3.17` and `Crystal 1.6.2` to build
+- making kubeconfig file created by `k8s-vault` writable
+
+
 ## [0.4.2] - 2021-11-29
 ### Changed
 - using `alpine:3.15` to build
@@ -80,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - initial implementation
 
 
-[Unreleased]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/anapsix/k8s-vault.cr/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/anapsix/k8s-vault.cr/compare/v0.3.0...v0.4.0
