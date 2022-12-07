@@ -1,5 +1,5 @@
 name: k8s-vault
-version: 0.4.2
+version: 0.4.3
 
 description: |
   k8s-vault makes it easy to reach K8s API via jumphost, using SSH port forwarding.

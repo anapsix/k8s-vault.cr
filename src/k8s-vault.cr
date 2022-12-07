@@ -271,7 +271,7 @@ module K8sVault
     begin
       config = K8sVault.config(kubecontext: kubecontext)
       # write temp KUBECONFIG
-      File.write(K8sVault::KUBECONFIG_TEMP, config.kubeconfig, perm = 0o0400)
+      File.write(K8sVault::KUBECONFIG_TEMP, config.kubeconfig, perm = 0o0600)
     rescue K8sVault::UnconfiguredContextError
       K8sVault::Log.error "\"#{kubecontext}\" context is not found in #{K8sVault::K8SVAULT_CONFIG}"
       cleanup
