@@ -78,6 +78,7 @@ module K8sVault
     CLI Options:
       -h | --help | --usage  displays usage
       -d | --debug           enabled debug output
+      --temp-path            path of generated temp file
       example-config         outputs example config
       completion             outputs bash completion code
       exec                   executes K8s-Vault
@@ -183,14 +184,15 @@ module K8sVault
   # Return `nil`
   def self.cleanup : Nil
     K8sVault::Log.debug "cleaning up"
-    File.delete(K8sVault::KUBECONFIG_TEMP) rescue nil
+    File.delete(ENV["KUBECONFIG"]) rescue nil
   end
 
   # Runs everything
   def self.run(options : Array(String))
     kubecontext = "_unset_"
     spawn_shell = false
-
+    kubeconfigTemp = K8sVault::KUBECONFIG_TEMP;
+    
     while options.size > 0
       case options.first
       when "-v", "--version"
@@ -201,6 +203,10 @@ module K8sVault
         exit 0
       when "-d", "--debug"
         K8sVault::Log.debug = true
+        options.shift
+      when "--temp-path"
+        options.shift
+        kubeconfigTemp = options.first
         options.shift
       when "example-config"
         K8sVault.example_config
@@ -271,7 +277,7 @@ module K8sVault
     begin
       config = K8sVault.config(kubecontext: kubecontext)
       # write temp KUBECONFIG
-      File.write(K8sVault::KUBECONFIG_TEMP, config.kubeconfig, perm = 0o0600)
+      File.write(kubeconfigTemp, config.kubeconfig, perm = 0o0600)
     rescue K8sVault::UnconfiguredContextError
       K8sVault::Log.error "\"#{kubecontext}\" context is not found in #{K8sVault::K8SVAULT_CONFIG}"
       cleanup
@@ -319,9 +325,9 @@ module K8sVault
     end
 
     ENV["K8SVAULT"] = "1"
-    ENV["KUBECONFIG"] = K8sVault::KUBECONFIG_TEMP
+    ENV["KUBECONFIG"] = kubeconfigTemp
     ENV["K8SVAULT_CONTEXT"] = kubecontext
-    K8sVault::Log.debug "using KUBECONFIG: #{K8sVault::KUBECONFIG_TEMP}"
+    K8sVault::Log.debug "using KUBECONFIG: #{kubeconfigTemp}"
 
     if spawn_shell
       K8sVault::Log.info "k8s-vault session started"
@@ -332,7 +338,7 @@ module K8sVault
       sleep 3
       cmd = options.first
       options.shift
-      Process.run(cmd, options, {"KUBECONFIG" => K8sVault::KUBECONFIG_TEMP}, output: STDOUT, error: STDERR)
+      Process.run(cmd, options, {"KUBECONFIG" => kubeconfigTemp}, output: STDOUT, error: STDERR)
     end
 
     forwarder.signal(Signal::TERM) rescue nil
