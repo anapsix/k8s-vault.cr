@@ -182,9 +182,9 @@ module K8sVault
   # Removed temporary KUBECONFIG, if present
   #
   # Return `nil`
-  def self.cleanup : Nil
+  def self.cleanup(kubeconfigTemp : String) : Nil
     K8sVault::Log.debug "cleaning up"
-    File.delete(ENV["KUBECONFIG"]) rescue nil
+    File.delete(kubeconfigTemp) rescue nil
   end
 
   # Runs everything
@@ -192,7 +192,7 @@ module K8sVault
     kubecontext = "_unset_"
     spawn_shell = false
     kubeconfigTemp = K8sVault::KUBECONFIG_TEMP;
-    
+
     while options.size > 0
       case options.first
       when "-v", "--version"
@@ -269,7 +269,7 @@ module K8sVault
 
     # trap CTRL-C
     Signal::INT.trap do
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 0
     end
 
@@ -280,20 +280,20 @@ module K8sVault
       File.write(kubeconfigTemp, config.kubeconfig, perm = 0o0600)
     rescue K8sVault::UnconfiguredContextError
       K8sVault::Log.error "\"#{kubecontext}\" context is not found in #{K8sVault::K8SVAULT_CONFIG}"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     rescue K8sVault::ConfigParseError
       K8sVault::Log.error "unable to parse config file at #{K8sVault::K8SVAULT_CONFIG}"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     rescue KCE::Exceptions::ContextMissingError
       K8sVault::Log.error "\"#{kubecontext}\" context is not found in KUBECONFIG (#{K8sVault::KUBECONFIG})"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     rescue ex
       K8sVault::Log.debug "#{ex.message} (#{ex.class})"
       K8sVault::Log.error "unexpected error"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     end
 
@@ -314,13 +314,13 @@ module K8sVault
       unless K8sVault.wait_for_connection(port: config.local_port.to_i, timeout: config.k8s_api_timeout.to_i)
         forwarder.signal(Signal::TERM) rescue nil
         forwarder.wait rescue nil
-        K8sVault.cleanup
+        K8sVault.cleanup(kubeconfigTemp)
         exit 1
       end
     rescue ex
       K8sVault::Log.debug "#{ex.message} (#{ex.class})"
       K8sVault::Log.error "failed to establish SSH session"
-      K8sVault.cleanup
+      K8sVault.cleanup(kubeconfigTemp)
       exit 1
     end
 
@@ -343,6 +343,6 @@ module K8sVault
 
     forwarder.signal(Signal::TERM) rescue nil
     forwarder.wait rescue nil
-    K8sVault.cleanup
+    K8sVault.cleanup(kubeconfigTemp)
   end
 end
