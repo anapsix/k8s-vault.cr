@@ -78,6 +78,7 @@ module K8sVault
     CLI Options:
       -h | --help | --usage  displays usage
       -d | --debug           enabled debug output
+      --temp-path            path of generated temp file
       example-config         outputs example config
       completion             outputs bash completion code
       exec                   executes K8s-Vault
@@ -181,15 +182,16 @@ module K8sVault
   # Removed temporary KUBECONFIG, if present
   #
   # Return `nil`
-  def self.cleanup : Nil
+  def self.cleanup(kubeconfigTemp : String) : Nil
     K8sVault::Log.debug "cleaning up"
-    File.delete(K8sVault::KUBECONFIG_TEMP) rescue nil
+    File.delete(kubeconfigTemp) rescue nil
   end
 
   # Runs everything
   def self.run(options : Array(String))
     kubecontext = "_unset_"
     spawn_shell = false
+    kubeconfigTemp = K8sVault::KUBECONFIG_TEMP;
 
     while options.size > 0
       case options.first
@@ -201,6 +203,10 @@ module K8sVault
         exit 0
       when "-d", "--debug"
         K8sVault::Log.debug = true
+        options.shift
+      when "--temp-path"
+        options.shift
+        kubeconfigTemp = options.first
         options.shift
       when "example-config"
         K8sVault.example_config
@@ -263,7 +269,7 @@ module K8sVault
 
     # trap CTRL-C
     Signal::INT.trap do
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 0
     end
 
@@ -271,23 +277,23 @@ module K8sVault
     begin
       config = K8sVault.config(kubecontext: kubecontext)
       # write temp KUBECONFIG
-      File.write(K8sVault::KUBECONFIG_TEMP, config.kubeconfig, perm = 0o0600)
+      File.write(kubeconfigTemp, config.kubeconfig, perm = 0o0600)
     rescue K8sVault::UnconfiguredContextError
       K8sVault::Log.error "\"#{kubecontext}\" context is not found in #{K8sVault::K8SVAULT_CONFIG}"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     rescue K8sVault::ConfigParseError
       K8sVault::Log.error "unable to parse config file at #{K8sVault::K8SVAULT_CONFIG}"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     rescue KCE::Exceptions::ContextMissingError
       K8sVault::Log.error "\"#{kubecontext}\" context is not found in KUBECONFIG (#{K8sVault::KUBECONFIG})"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     rescue ex
       K8sVault::Log.debug "#{ex.message} (#{ex.class})"
       K8sVault::Log.error "unexpected error"
-      cleanup
+      cleanup(kubeconfigTemp)
       exit 1
     end
 
@@ -308,20 +314,20 @@ module K8sVault
       unless K8sVault.wait_for_connection(port: config.local_port.to_i, timeout: config.k8s_api_timeout.to_i)
         forwarder.signal(Signal::TERM) rescue nil
         forwarder.wait rescue nil
-        K8sVault.cleanup
+        K8sVault.cleanup(kubeconfigTemp)
         exit 1
       end
     rescue ex
       K8sVault::Log.debug "#{ex.message} (#{ex.class})"
       K8sVault::Log.error "failed to establish SSH session"
-      K8sVault.cleanup
+      K8sVault.cleanup(kubeconfigTemp)
       exit 1
     end
 
     ENV["K8SVAULT"] = "1"
-    ENV["KUBECONFIG"] = K8sVault::KUBECONFIG_TEMP
+    ENV["KUBECONFIG"] = kubeconfigTemp
     ENV["K8SVAULT_CONTEXT"] = kubecontext
-    K8sVault::Log.debug "using KUBECONFIG: #{K8sVault::KUBECONFIG_TEMP}"
+    K8sVault::Log.debug "using KUBECONFIG: #{kubeconfigTemp}"
 
     if spawn_shell
       K8sVault::Log.info "k8s-vault session started"
@@ -332,11 +338,11 @@ module K8sVault
       sleep 3
       cmd = options.first
       options.shift
-      Process.run(cmd, options, {"KUBECONFIG" => K8sVault::KUBECONFIG_TEMP}, output: STDOUT, error: STDERR)
+      Process.run(cmd, options, {"KUBECONFIG" => kubeconfigTemp}, output: STDOUT, error: STDERR)
     end
 
     forwarder.signal(Signal::TERM) rescue nil
     forwarder.wait rescue nil
-    K8sVault.cleanup
+    K8sVault.cleanup(kubeconfigTemp)
   end
 end
