@@ -35,7 +35,11 @@ module K8sVault
     cluster_server = kubeconfig.clusters.first.cluster.server.to_s
     remote_proto = cluster_server.split(/https?:\/\//).first?.to_s
     remote_proto = remote_proto.empty? ? "https" : remote_proto
-    remote_host, remote_port = cluster_server.split(/https?:\/\//).last.split(":")
+    remote_host = cluster_server.split(/https?:\/\//).last
+    remote_port = "443"
+    if (remote_host.index(":"))
+      remote_host, remote_port = remote_host.split(":")
+    end
 
     local_port = if config.ssh_forwarding_port.random == true
                    Random.rand(K8sVault::RANDOM_PORT_RANGE) + K8sVault::RANDOM_PORT_OFFSET
